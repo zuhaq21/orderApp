@@ -132,6 +132,7 @@ public class LoginActivity extends AppCompatActivity{
             BASE_URL = App.BASE_URL;
         }
 
+        //Log.i("TAG", "Config Settings:  "+ mRemoteConfig.fetch());
         Log.i("TAG", "BASE_URL : "+ BASE_URL.length());
 
         testUser = mRemoteConfig.getString("test_user");
@@ -165,11 +166,13 @@ public class LoginActivity extends AppCompatActivity{
 
         Retrofit retrofit = new Retrofit.Builder().client(new OkHttpClient()).client(new OkHttpClient()).baseUrl(BASE_URL+App.USER_SERVICE_URL)
                 .addConverterFactory(GsonConverterFactory.create()).build();
+        //Log.i("TAG","retrofit url:  "+ retrofit.baseUrl());
 
         LoginApi loginApiService = retrofit.create(LoginApi.class);
 
         Call<LoginResponse> loginResponse = loginApiService.login("application/json",
                 new LoginRequest(email.getEditText().getText().toString(), password.getEditText().getText().toString()));
+        Log.i("TAG","login response:  "+ loginResponse.toString());
 
         loginResponse.clone().enqueue(new Callback<LoginResponse>() {
 
@@ -181,12 +184,16 @@ public class LoginActivity extends AppCompatActivity{
                 if(response.isSuccessful())
                 {
                     LoginData res = response.body().data;
+
                     Log.d("TAG", "Login Response : "+ response.body().data.toString());
+                    //Log.d("TAG", "Authorities Size: "+ response.body().data.authorities.size());
+
                     loginMessage = "Logged In Successfully !";
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     if(!sharedPreferences.contains("isLoggedIn") || sharedPreferences.getInt("isLoggedIn", -1) == 0)
                     {
                         editor.putString("email", res.session.username);
+
                         editor.putString("accessToken", res.session.accessToken);
                         editor.putString("refreshToken", res.session.refreshToken);
                         editor.putString("ownerId", res.session.ownerId);
@@ -196,7 +203,8 @@ public class LoginActivity extends AppCompatActivity{
                         editor.apply();
                         sharedPreferences.edit().putString("base_url", BASE_URL).apply();
                         getStoresAndRegister(sharedPreferences);
-                        Log.i("getAllStore", "onResponse: " + stores );
+                        //Log.i("TAG", "sharedPreferences.getAll():   "+ sharedPreferences.getAll());
+                        Log.i("getAllStore", "onResponse: " + stores);
 
                     }
 
@@ -269,6 +277,7 @@ public class LoginActivity extends AppCompatActivity{
 
         for(Store store : stores)
         {
+            Log.i("TAG","Stores Description: "+store.storeDescription);
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {

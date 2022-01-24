@@ -14,12 +14,14 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 
+import com.google.android.gms.common.util.ArrayUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.symplified.order.App;
 import com.symplified.order.OrdersActivity;
 import com.symplified.order.R;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -33,6 +35,8 @@ public class OrderNotificationService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+        String[] categoryFnb = getResources().getStringArray(R.array.categoryFnB);
+        String[] categoryEcomm = getResources().getStringArray(R.array.categoryEcommerece);
 
         Intent toOrdersActivity = new Intent(this, OrdersActivity.class);
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
@@ -40,7 +44,8 @@ public class OrderNotificationService extends FirebaseMessagingService {
         PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         Log.e("FirebaseMessagingService","result from getFrom:  "+ remoteMessage.getFrom());
         //Added
-        if (remoteMessage.getFrom().equals("/topics/McD"))
+        String str = remoteMessage.getFrom();
+        if (ArrayUtils.contains(categoryFnb, str))
         {
             Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                     .setContentIntent(pendingIntent)
@@ -59,7 +64,7 @@ public class OrderNotificationService extends FirebaseMessagingService {
             notificationManager.notify(new Random().nextInt(), notification);
         }
 
-        if (remoteMessage.getFrom().equals("/topics/awan-tech"))
+        if (ArrayUtils.contains(categoryEcomm, str))
         {
             Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                     .setContentIntent(pendingIntent)
