@@ -69,11 +69,5 @@
     <string name="store_status">Store Status</string>
     <string name="click_here"><u>Click Here</u></string>
 
-    <string-array name="categoryFnB">
-        <item> /topics/McD </item>
-    </string-array>
 
-    <string-array name="categoryEcommerece">
-        <item> /topics/awan-tech </item>
-    </string-array>
 </resources>

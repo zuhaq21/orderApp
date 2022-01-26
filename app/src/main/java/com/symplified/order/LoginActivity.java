@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,6 +70,8 @@ public class LoginActivity extends AppCompatActivity{
     private String testUser,testPass;
     private String BASE_URL;
     private List<Store> stores;
+    //
+    private List<String> storeCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +206,7 @@ public class LoginActivity extends AppCompatActivity{
                         editor.apply();
                         sharedPreferences.edit().putString("base_url", BASE_URL).apply();
                         getStoresAndRegister(sharedPreferences);
+                        //getStoreCategory(sharedPreferences);
                         //Log.i("TAG", "sharedPreferences.getAll():   "+ sharedPreferences.getAll());
                         Log.i("getAllStore", "onResponse: " + stores);
 
@@ -253,11 +257,15 @@ public class LoginActivity extends AppCompatActivity{
             final SharedPreferences.Editor editor = sharedPreferences.edit();
             StringBuilder timeZoneList = new StringBuilder();
             StringBuilder storeIdList = new StringBuilder();
+            //storeCategory = new ArrayList<>();
             for(Store store : items)
             {
                 timeZoneList.append(store.regionCountry.timezone).append(" ");
                 storeIdList.append(store.id).append(" ");
                 sharedPreferences.edit().putString(store.id+"-name", store.name).apply();
+
+                Log.i("TAG","Stores Category from setStoreData: "+store.verticalCode);
+                sharedPreferences.edit().putString("storeCategory",store.verticalCode).apply();
             }
             editor.putString("storeId", storeIdList.toString().split(" ")[0]).apply();
             editor.putString("timezone", timeZoneList.toString()).apply();
@@ -277,7 +285,7 @@ public class LoginActivity extends AppCompatActivity{
 
         for(Store store : stores)
         {
-            Log.i("TAG","Stores Description: "+store.storeDescription);
+            Log.i("TAG","Stores Category from subscribeStore: "+store.verticalCode);
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
@@ -307,10 +315,12 @@ public class LoginActivity extends AppCompatActivity{
      * method to make the api call to get all the stores of user from backend
      * @param sharedPreferences
      */
+
     private void getStoresAndRegister(SharedPreferences sharedPreferences) {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer Bearer accessToken");
+        // from here
 
         Retrofit retrofit = new Retrofit.Builder().client(new OkHttpClient()).baseUrl(BASE_URL + App.PRODUCT_SERVICE_URL)
                 .addConverterFactory(GsonConverterFactory.create()).build();

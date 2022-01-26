@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
@@ -35,17 +36,21 @@ public class OrderNotificationService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        String[] categoryFnb = getResources().getStringArray(R.array.categoryFnB);
-        String[] categoryEcomm = getResources().getStringArray(R.array.categoryEcommerece);
+        SharedPreferences sharedPreferences = getSharedPreferences(App.SESSION_DETAILS_TITLE, Context.MODE_PRIVATE);
+        String str = sharedPreferences.getString("storeCategory", "");
+        //String[] categoryFnb = getResources().getStringArray(R.array.categoryFnB);
+        //String[] categoryEcomm = getResources().getStringArray(R.array.categoryEcommerece);
 
         Intent toOrdersActivity = new Intent(this, OrdersActivity.class);
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
+
         taskStackBuilder.addNextIntentWithParentStack(toOrdersActivity);
         PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         Log.e("FirebaseMessagingService","result from getFrom:  "+ remoteMessage.getFrom());
+        Log.e("FirebaseMessagingService","result from getTo:  "+ remoteMessage.getTo());
         //Added
-        String str = remoteMessage.getFrom();
-        if (ArrayUtils.contains(categoryFnb, str))
+        //String str = remoteMessage.getFrom();
+        if (str.contains("FnB"))
         {
             Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                     .setContentIntent(pendingIntent)
@@ -64,7 +69,7 @@ public class OrderNotificationService extends FirebaseMessagingService {
             notificationManager.notify(new Random().nextInt(), notification);
         }
 
-        if (ArrayUtils.contains(categoryEcomm, str))
+        if (str.contains("ECommerece"))
         {
             Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                     .setContentIntent(pendingIntent)
@@ -101,7 +106,7 @@ public class OrderNotificationService extends FirebaseMessagingService {
         notificationManager.notify(new Random().nextInt(), notification);*/
 
         // && !isAppOnForeground(getApplicationContext(), getPackageName())
-        if(!AlertService.isPlaying() && remoteMessage.getFrom().equals("/topics/McD"))
+        if(!AlertService.isPlaying() && str.contains("FnB"))
         {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(new Intent(this, AlertService.class));

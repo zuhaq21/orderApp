@@ -108,7 +108,9 @@ public class ChooseStoreActivity extends AppCompatActivity {
         final SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("timezone", stores.get(0).regionCountry.timezone).apply();
         editor.putString("storeId", stores.get(0).id).apply();
-
+        //
+        editor.putString("storeCategory", stores.get(0).verticalCode).apply();
+        //
         String BASE_URL = sharedPreferences.getString("base_url", App.BASE_URL);
         Retrofit retrofitLogo = new Retrofit.Builder().client(new OkHttpClient()).baseUrl(BASE_URL + App.PRODUCT_SERVICE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         StoreApi storeApiSerivice = retrofitLogo.create(StoreApi.class);
