@@ -69,7 +69,7 @@ public class OrderNotificationService extends FirebaseMessagingService {
             notificationManager.notify(new Random().nextInt(), notification);
         }
 
-        if (str.contains("ECommerece"))
+        if (str.contains("ECommerce"))
         {
             Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                     .setContentIntent(pendingIntent)
