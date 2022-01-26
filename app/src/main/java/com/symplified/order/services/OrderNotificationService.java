@@ -40,7 +40,7 @@ public class OrderNotificationService extends FirebaseMessagingService {
         String str = sharedPreferences.getString("storeCategory", "");
         //String[] categoryFnb = getResources().getStringArray(R.array.categoryFnB);
         //String[] categoryEcomm = getResources().getStringArray(R.array.categoryEcommerece);
-
+        String catrgoryNotification = NotificationCompat.CATEGORY_ALARM;
         Intent toOrdersActivity = new Intent(this, OrdersActivity.class);
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
 
@@ -50,62 +50,33 @@ public class OrderNotificationService extends FirebaseMessagingService {
         Log.e("FirebaseMessagingService","result from getTo:  "+ remoteMessage.getTo());
         //Added
         //String str = remoteMessage.getFrom();
-        if (str.contains("FnB"))
+        if(str.contains("FnB"))
         {
-            Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                    .setContentIntent(pendingIntent)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(remoteMessage.getData().get("title"))
-                    .setContentText(remoteMessage.getData().get("body"))
-                    .setAutoCancel(false)
-                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setCategory(NotificationCompat.CATEGORY_ALARM)
-                    .setColor(Color.CYAN)
-                    .build();
-
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(new Random().nextInt(), notification);
+            catrgoryNotification = NotificationCompat.CATEGORY_ALARM;
+        }
+        if(str.contains("ECommerce"))
+        {
+            catrgoryNotification = NotificationCompat.CATEGORY_REMINDER;
         }
 
-        if (str.contains("ECommerce"))
-        {
-            Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                    .setContentIntent(pendingIntent)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(remoteMessage.getData().get("title"))
-                    .setContentText(remoteMessage.getData().get("body"))
-                    .setAutoCancel(false)
-                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setCategory(NotificationCompat.CATEGORY_REMINDER)
-                    .setColor(Color.CYAN)
-                    .build();
-
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(new Random().nextInt(), notification);
-        }
-
-        //Commented by me
-        /* Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(remoteMessage.getData().get("title"))
                 .setContentText(remoteMessage.getData().get("body"))
                 .setAutoCancel(false)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setCategory(catrgoryNotification)
                 .setColor(Color.CYAN)
                 .build();
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(new Random().nextInt(), notification);*/
+        notificationManager.notify(new Random().nextInt(), notification);
 
-        // && !isAppOnForeground(getApplicationContext(), getPackageName())
+
+
         if(!AlertService.isPlaying() && str.contains("FnB"))
         {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
